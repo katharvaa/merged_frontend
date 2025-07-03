@@ -188,26 +188,26 @@ const VehicleManagementDashboard = ({ onBack, onCreateVehicle, onUpdateVehicle, 
         transition={{ duration: 0.5, delay: 0.3 }}
         className="flex justify-center mb-8"
       >
-        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-4xl">
+        <div className="flex flex-col sm:flex-row gap-4 items-center">
           <Button
             onClick={onCreateVehicle}
-            className="flex-1 h-10 sm:h-12 text-sm sm:text-base lg:text-lg text-white transition-all duration-200 hover:scale-105 bg-green-600 hover:bg-green-700"
+            className="px-6 py-2 h-9 text-sm text-white transition-all duration-200 hover:scale-105 bg-green-600 hover:bg-green-700 rounded-full"
           >
-            <Plus className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+            <Plus className="h-4 w-4 mr-2" />
             Create Vehicle
           </Button>
           <Button
             onClick={() => onUpdateVehicle()}
-            className="flex-1 h-10 sm:h-12 text-sm sm:text-base lg:text-lg text-white dark:text-white transition-all duration-200 hover:scale-105 bg-yellow-500 hover:bg-yellow-600"
+            className="px-6 py-2 h-9 text-sm text-white dark:text-white transition-all duration-200 hover:scale-105 bg-yellow-500 hover:bg-yellow-600 rounded-full"
           >
-            <Edit className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+            <Edit className="h-4 w-4 mr-2" />
             Update Vehicle
           </Button>
           <Button
             onClick={() => onDeleteVehicle()}
-            className="flex-1 h-10 sm:h-12 text-sm sm:text-base lg:text-lg text-white transition-all duration-200 hover:scale-105 bg-red-500 hover:bg-red-700"
+            className="px-6 py-2 h-9 text-sm text-white transition-all duration-200 hover:scale-105 bg-red-500 hover:bg-red-700 rounded-full"
           >
-            <Trash2 className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+            <Trash2 className="h-4 w-4 mr-2" />
             Delete Vehicle
           </Button>
         </div>
@@ -220,32 +220,35 @@ const VehicleManagementDashboard = ({ onBack, onCreateVehicle, onUpdateVehicle, 
         transition={{ duration: 0.5, delay: 0.4 }}
       >
         <Card>
-          <CardHeader>
-            <CardTitle>All Vehicles</CardTitle>
+          <CardHeader className="p-3 sm:p-4 lg:p-6 pb-0">
+            <CardTitle className="flex items-center space-x-2">
+              <Truck className="h-5 w-5" />
+              <span>All Vehicles</span>
+            </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-0 sm:p-6 pt-2">
             <div className="overflow-x-auto">
-              <Table>
+              <Table className="table-auto">
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Vehicle ID</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Registration Number</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead className="whitespace-nowrap">Vehicle ID</TableHead>
+                    <TableHead className="whitespace-nowrap">Type</TableHead>
+                    <TableHead className="whitespace-nowrap">Registration Number</TableHead>
+                    <TableHead className="whitespace-nowrap">Status</TableHead>
+                    <TableHead className="whitespace-nowrap">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {vehicles.map((vehicle) => (
                     <TableRow key={vehicle.id}>
-                      <TableCell className="font-medium">{vehicle.id}</TableCell>
-                      <TableCell>
+                      <TableCell className="font-medium whitespace-nowrap">{vehicle.id}</TableCell>
+                      <TableCell className="whitespace-nowrap">
                         <Badge variant={getTypeBadgeVariant(vehicle.type)}>
                           {vehicle.type}
                         </Badge>
                       </TableCell>
-                      <TableCell>{vehicle.registrationNumber}</TableCell>
-                      <TableCell>
+                      <TableCell className="whitespace-nowrap">{vehicle.registrationNumber}</TableCell>
+                      <TableCell className="whitespace-nowrap">
                         <Badge className={`
                           ${vehicle.status === 'available' ? 'bg-green-500 text-white' : ''}
                           ${vehicle.status === 'under maintenance' ? 'bg-yellow-500 text-black' : ''}
@@ -254,7 +257,7 @@ const VehicleManagementDashboard = ({ onBack, onCreateVehicle, onUpdateVehicle, 
                           {vehicle.status}
                         </Badge>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="whitespace-nowrap">
                         <div className="flex space-x-2">
                           <Button
                             variant="outline"

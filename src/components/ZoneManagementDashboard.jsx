@@ -131,26 +131,26 @@ const ZoneManagementDashboard = ({ onCreateZone, onUpdateZone, onDeleteZone, onB
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3, duration: 0.6 }}
-        className="flex justify-center w-full"
+        className="flex justify-center mb-8"
       >
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full max-w-4xl">
+        <div className="flex flex-col sm:flex-row gap-4 items-center">
           <Button 
             onClick={onCreateZone} 
-            className="w-full sm:flex-1 h-10 sm:h-12 text-sm sm:text-base lg:text-lg text-white transition-all duration-200 hover:scale-105 bg-green-600 hover:bg-green-700"
+            className="px-6 py-2 h-9 text-sm text-white transition-all duration-200 hover:scale-105 bg-green-600 hover:bg-green-700 rounded-full"
           >
-            <Plus className="mr-2 h-4 w-4 sm:h-5 sm:w-5" /> Create Zone
+            <Plus className="mr-2 h-4 w-4" /> Create Zone
           </Button>
           <Button 
             onClick={() => onUpdateZone()} 
-            className="w-full sm:flex-1 h-10 sm:h-12 text-sm sm:text-base lg:text-lg text-white dark:text-white transition-all duration-200 hover:scale-105 bg-yellow-500 hover:bg-yellow-600"
+            className="px-6 py-2 h-9 text-sm text-white dark:text-white transition-all duration-200 hover:scale-105 bg-yellow-500 hover:bg-yellow-600 rounded-full"
           >
-            <Edit className="mr-2 h-4 w-4 sm:h-5 sm:w-5" /> Update Zone
+            <Edit className="mr-2 h-4 w-4" /> Update Zone
           </Button>
           <Button 
             onClick={() => onDeleteZone()} 
-            className="w-full sm:flex-1 h-10 sm:h-12 text-sm sm:text-base lg:text-lg text-white transition-all duration-200 hover:scale-105 bg-red-500 hover:bg-red-700"
+            className="px-6 py-2 h-9 text-sm text-white transition-all duration-200 hover:scale-105 bg-red-500 hover:bg-red-700 rounded-full"
           >
-            <Trash2 className="mr-2 h-4 w-4 sm:h-5 sm:w-5" /> Delete Zone
+            <Trash2 className="mr-2 h-4 w-4" /> Delete Zone
           </Button>
         </div>
       </motion.div>
@@ -162,49 +162,35 @@ const ZoneManagementDashboard = ({ onCreateZone, onUpdateZone, onDeleteZone, onB
         transition={{ delay: 0.4, duration: 0.6 }}
       >
         <Card>
-          <CardHeader>
+          <CardHeader className="p-3 sm:p-4 lg:p-6 pb-0">
             <CardTitle className="flex items-center space-x-2">
               <MapPin className="h-5 w-5" />
               <span>All Zones</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-0 sm:p-6 sm:pt-0">
+          <CardContent className="p-0 sm:p-6 pt-2">
             <div className="overflow-x-auto">
-              <Table>
+              <Table className="table-auto">
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-xs sm:text-sm">Zone ID</TableHead>
-                    <TableHead className="text-xs sm:text-sm">Zone Name</TableHead>
-                    <TableHead className="text-xs sm:text-sm hidden md:table-cell">Description</TableHead>
-                    <TableHead className="text-xs sm:text-sm">Status</TableHead>
-                    <TableHead className="text-xs sm:text-sm">Actions</TableHead>
+                    <TableHead className="text-xs sm:text-sm whitespace-nowrap">Zone ID</TableHead>
+                    <TableHead className="text-xs sm:text-sm whitespace-nowrap">Zone Name</TableHead>
+                    <TableHead className="text-xs sm:text-sm whitespace-nowrap">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {displayZones.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
                         {errorMessage ? "No zones found due to an error. Please try again." : "No zones available. Create your first zone to get started."}
                       </TableCell>
                     </TableRow>
                   ) : (
                     displayZones.map((zone) => (
                       <TableRow key={zone.id} className="hover:bg-muted/50">
-                        <TableCell className="text-xs sm:text-sm font-medium">{zone.id}</TableCell>
-                        <TableCell className="text-xs sm:text-sm">{zone.name}</TableCell>
-                        <TableCell className="text-xs sm:text-sm hidden md:table-cell">{zone.description}</TableCell>
-                        <TableCell className="text-xs sm:text-sm">
-                          <Badge 
-                            variant={zone.status === 'Active' ? 'default' : 'secondary'}
-                            className={zone.status === 'Active' 
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
-                              : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
-                            }
-                          >
-                            {zone.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-xs sm:text-sm">
+                        <TableCell className="text-xs sm:text-sm font-medium whitespace-nowrap">{zone.id}</TableCell>
+                        <TableCell className="text-xs sm:text-sm whitespace-nowrap">{zone.name}</TableCell>
+                        <TableCell className="text-xs sm:text-sm whitespace-nowrap">
                           <div className="flex space-x-1">
                             <Button
                               variant="outline"

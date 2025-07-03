@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Plus, Edit, Users, UserCheck, UserMinus, UserX, ArrowLeft } from 'lucide-react';
+import { Plus, Edit, Users, UserCheck, UserMinus, UserX, ArrowLeft, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import LoadingDisplay from './LoadingDisplay';
 import ErrorDisplay from './ErrorDisplay';
@@ -100,7 +100,6 @@ const WorkerManagementDashboard = ({ onBack, onCreateWorker, onUpdateWorker }) =
               className="flex items-center gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
-              Dashboard
             </Button>
           )}
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 dark:text-white">Worker Management</h1>
@@ -139,22 +138,24 @@ const WorkerManagementDashboard = ({ onBack, onCreateWorker, onUpdateWorker }) =
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.6 }}
-        className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6 lg:mb-8"
+        className="flex justify-center mb-8"
       >
-        <Button
-          onClick={onCreateWorker}
-          className="w-full sm:flex-1 h-10 sm:h-12 text-sm sm:text-base lg:text-lg text-white transition-all duration-200 hover:scale-105 bg-green-600 hover:bg-green-700"
-        >
-          <Plus className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-          Create Worker
-        </Button>
-        <Button
-          onClick={onUpdateWorker}
-          className="w-full sm:flex-1 h-10 sm:h-12 text-sm sm:text-base lg:text-lg text-white dark:text-white transition-all duration-200 hover:scale-105 bg-yellow-600 hover:bg-yellow-700"
-        >
-          <Edit className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-          Update Worker
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-4 items-center">
+          <Button
+            onClick={onCreateWorker}
+            className="px-6 py-2 h-9 text-sm text-white transition-all duration-200 hover:scale-105 bg-green-600 hover:bg-green-700 rounded-full"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Create Worker
+          </Button>
+          <Button
+            onClick={onUpdateWorker}
+            className="px-6 py-2 h-9 text-sm text-white dark:text-white transition-all duration-200 hover:scale-105 bg-yellow-500 hover:bg-yellow-600 rounded-full"
+          >
+            <Edit className="h-4 w-4 mr-2" />
+            Update Worker
+          </Button>
+        </div>
       </motion.div>
 
       {/* Workers Table */}
@@ -165,29 +166,30 @@ const WorkerManagementDashboard = ({ onBack, onCreateWorker, onUpdateWorker }) =
         className="w-full"
       >
         <Card className="w-full">
-          <CardHeader className="p-3 sm:p-4 lg:p-6">
+          <CardHeader className="p-3 sm:p-4 lg:p-6 pb-0">
             <CardTitle className="flex items-center space-x-2 text-sm sm:text-base lg:text-lg">
               <Users className="h-4 w-4 sm:h-5 sm:w-5" />
               <span>All Workers</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-0 sm:p-3 lg:p-6 sm:pt-0 lg:pt-0">
+          <CardContent className="p-0 sm:p-3 lg:p-6 pt-2">
             <div className="overflow-x-auto w-full">
-              <Table className="min-w-full">
+              <Table className="min-w-full table-auto">
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">Worker ID</TableHead>
                     <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">Name</TableHead>
-                    <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4 hidden sm:table-cell">Phone No.</TableHead>
-                    <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4 hidden md:table-cell">Email</TableHead>
-                    <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4 hidden lg:table-cell">Role ID</TableHead>
+                    <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">Phone No.</TableHead>
+                    <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">Email</TableHead>
+                    <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">Role ID</TableHead>
                     <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">Status</TableHead>
+                    <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {workers.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center py-6 sm:py-8 text-muted-foreground text-xs sm:text-sm">
+                      <TableCell colSpan={7} className="text-center py-6 sm:py-8 text-muted-foreground text-xs sm:text-sm">
                         No workers found. Create a new worker to get started!
                       </TableCell>
                     </TableRow>
@@ -196,9 +198,9 @@ const WorkerManagementDashboard = ({ onBack, onCreateWorker, onUpdateWorker }) =
                       <TableRow key={worker.id} className="hover:bg-muted/50">
                         <TableCell className="font-medium text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">{worker.id}</TableCell>
                         <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">{worker.name}</TableCell>
-                        <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap hidden sm:table-cell">{worker.phone}</TableCell>
-                        <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap hidden md:table-cell">{worker.email}</TableCell>
-                        <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap hidden lg:table-cell">{worker.roleId}</TableCell>
+                        <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">{worker.phone}</TableCell>
+                        <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">{worker.email}</TableCell>
+                        <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">{worker.roleId}</TableCell>
                         <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
                           <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                             worker.status === 'available' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
@@ -207,6 +209,26 @@ const WorkerManagementDashboard = ({ onBack, onCreateWorker, onUpdateWorker }) =
                           }`}>
                             {worker.status}
                           </span>
+                        </TableCell>
+                        <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+                          <div className="flex space-x-1">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => onUpdateWorker(worker.id)}
+                              className="h-7 w-7 p-0"
+                            >
+                              <Edit className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => { /* Add delete functionality here */ }}
+                              className="h-7 w-7 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))
@@ -257,5 +279,4 @@ const WorkerManagementDashboard = ({ onBack, onCreateWorker, onUpdateWorker }) =
 };
 
 export default WorkerManagementDashboard;
-
 

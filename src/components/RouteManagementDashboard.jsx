@@ -122,26 +122,26 @@ const RouteManagementDashboard = ({ onCreateRoute, onUpdateRoute, onDeleteRoute,
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3, duration: 0.6 }}
-        className="flex justify-center w-full"
+        className="flex justify-center mb-8"
       >
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full max-w-4xl">
+        <div className="flex flex-col sm:flex-row gap-4 items-center">
           <Button 
             onClick={onCreateRoute} 
-            className="w-full sm:flex-1 h-10 sm:h-12 text-sm sm:text-base lg:text-lg text-white transition-all duration-200 hover:scale-105 bg-green-600 hover:bg-green-700"
+            className="px-6 py-2 h-9 text-sm text-white transition-all duration-200 hover:scale-105 bg-green-600 hover:bg-green-700 rounded-full"
           >
-            <Plus className="mr-2 h-4 w-4 sm:h-5 sm:w-5" /> Create Route
+            <Plus className="mr-2 h-4 w-4" /> Create Route
           </Button>
           <Button 
             onClick={() => onUpdateRoute()} 
-            className="w-full sm:flex-1 h-10 sm:h-12 text-sm sm:text-base lg:text-lg text-white dark:text-white transition-all duration-200 hover:scale-105 bg-yellow-500 hover:bg-yellow-600"
+            className="px-6 py-2 h-9 text-sm text-white dark:text-white transition-all duration-200 hover:scale-105 bg-yellow-500 hover:bg-yellow-600 rounded-full"
           >
-            <Edit className="mr-2 h-4 w-4 sm:h-5 sm:w-5" /> Update Route
+            <Edit className="mr-2 h-4 w-4" /> Update Route
           </Button>
           <Button 
             onClick={() => onDeleteRoute()} 
-            className="w-full sm:flex-1 h-10 sm:h-12 text-sm sm:text-base lg:text-lg text-white transition-all duration-200 hover:scale-105 bg-red-500 hover:bg-red-700"
+            className="px-6 py-2 h-9 text-sm text-white transition-all duration-200 hover:scale-105 bg-red-500 hover:bg-red-700 rounded-full"
           >
-            <Trash2 className="mr-2 h-4 w-4 sm:h-5 sm:w-5" /> Delete Route
+            <Trash2 className="mr-2 h-4 w-4" /> Delete Route
           </Button>
         </div>
       </motion.div>
@@ -154,26 +154,28 @@ const RouteManagementDashboard = ({ onCreateRoute, onUpdateRoute, onDeleteRoute,
         className="w-full"
       >
         <Card className="w-full">
-          <CardHeader className="p-3 sm:p-4 lg:p-6">
-            <CardTitle className="text-sm sm:text-base lg:text-lg">All Routes</CardTitle>
+          <CardHeader className="p-3 sm:p-4 lg:p-6 pb-0">
+            <CardTitle className="flex items-center space-x-2 text-sm sm:text-base lg:text-lg">
+              <Route className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span>All Routes</span>
+            </CardTitle>
           </CardHeader>
-          <CardContent className="p-0 sm:p-3 lg:p-6 sm:pt-0 lg:pt-0">
+          <CardContent className="p-0 sm:p-3 lg:p-6 pt-2">
             <div className="overflow-x-auto w-full">
-              <Table className="min-w-full">
+              <Table className="min-w-full table-auto">
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">Route ID</TableHead>
-                    <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4 hidden sm:table-cell">Zone ID</TableHead>
+                    <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">Zone ID</TableHead>
                     <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">Route Name</TableHead>
-                    <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4 hidden md:table-cell">Path Details</TableHead>
-                    <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4 hidden lg:table-cell">Avg. Est. Time</TableHead>
+                    <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">Path Details</TableHead>
                     <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {routes.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center py-6 sm:py-8 text-muted-foreground text-xs sm:text-sm">
+                      <TableCell colSpan={5} className="text-center py-6 sm:py-8 text-muted-foreground text-xs sm:text-sm">
                         No routes available.
                       </TableCell>
                     </TableRow>
@@ -181,10 +183,9 @@ const RouteManagementDashboard = ({ onCreateRoute, onUpdateRoute, onDeleteRoute,
                     routes.map((route) => (
                       <TableRow key={route.id} className="hover:bg-muted/50">
                         <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap font-medium">{route.id}</TableCell>
-                        <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap hidden sm:table-cell">{route.zoneId}</TableCell>
+                        <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">{route.zoneId}</TableCell>
                         <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">{route.name}</TableCell>
-                        <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap hidden md:table-cell max-w-xs truncate" title={route.pathDetails}>{route.pathDetails}</TableCell>
-                        <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap hidden lg:table-cell">{route.estimatedTime}</TableCell>
+                        <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap max-w-xs truncate" title={route.pathDetails}>{route.pathDetails}</TableCell>
                         <TableCell className="px-2 sm:px-4">
                           <div className="flex space-x-1 sm:space-x-2">
                             <Button variant="outline" size="sm" onClick={() => onUpdateRoute(route.id)} className="h-7 w-7 sm:h-8 sm:w-8 p-0">

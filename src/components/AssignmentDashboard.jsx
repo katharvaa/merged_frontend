@@ -170,26 +170,26 @@ const AssignmentDashboard = ({ onBack, onCreateAssignment, onUpdateAssignment, o
         transition={{ delay: 0.4, duration: 0.6 }}
         className="flex justify-center mb-8"
       >
-        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-4xl">
+        <div className="flex flex-col sm:flex-row gap-4 items-center">
           <Button
             onClick={onCreateAssignment}
-            className="flex-1 h-10 sm:h-12 text-sm sm:text-base lg:text-lg text-white transition-all duration-200 hover:scale-105 bg-green-600 hover:bg-green-700"
+            className="px-6 py-2 h-9 text-sm text-white transition-all duration-200 hover:scale-105 bg-green-600 hover:bg-green-700 rounded-full"
           >
-            <Plus className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+            <Plus className="h-4 w-4 mr-2" />
             Create Assignment
           </Button>
           <Button
             onClick={onUpdateAssignment}
-            className="flex-1 h-10 sm:h-12 text-sm sm:text-base lg:text-lg text-white dark:text-white transition-all duration-200 hover:scale-105 bg-yellow-500 hover:bg-yellow-600"
+            className="px-6 py-2 h-9 text-sm text-white dark:text-white transition-all duration-200 hover:scale-105 bg-yellow-500 hover:bg-yellow-600 rounded-full"
           >
-            <Edit className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+            <Edit className="h-4 w-4 mr-2" />
             Update Assignment
           </Button>
           <Button
             onClick={onDeleteAssignment}
-            className="flex-1 h-10 sm:h-12 text-sm sm:text-base lg:text-lg text-white transition-all duration-200 hover:scale-105 bg-red-500 hover:bg-red-700"
+            className="px-6 py-2 h-9 text-sm text-white transition-all duration-200 hover:scale-105 bg-red-500 hover:bg-red-700 rounded-full"
           >
-            <Trash2 className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+            <Trash2 className="h-4 w-4 mr-2" />
             Delete Assignment
           </Button>
         </div>
@@ -202,34 +202,28 @@ const AssignmentDashboard = ({ onBack, onCreateAssignment, onUpdateAssignment, o
         transition={{ delay: 0.5, duration: 0.6 }}
       >
         <Card className="w-full">
-          <CardHeader className="p-3 sm:p-4 lg:p-6">
+          <CardHeader className="p-3 sm:p-4 lg:p-6 pb-0">
             <CardTitle className="flex items-center space-x-2 text-sm sm:text-base lg:text-lg">
               <ClipboardList className="h-4 w-4 sm:h-5 sm:w-5" />
               <span>Assignment List</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-0 sm:p-3 lg:p-6 sm:pt-0 lg:pt-0">
+          <CardContent className="p-0 sm:p-3 lg:p-6 pt-2">
             <div className="overflow-x-auto w-full">
-              <Table className="min-w-full">
+              <Table className="min-w-full table-auto">
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
                       Assignment ID
                     </TableHead>
                     <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
-                      Vehicle
-                    </TableHead>
-                    <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4 hidden sm:table-cell">
-                      Route
-                    </TableHead>
-                    <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4 hidden md:table-cell">
-                      Zone
-                    </TableHead>
-                    <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4 hidden lg:table-cell">
-                      Assigned Workers
+                      Vehicle ID
                     </TableHead>
                     <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
-                      Shift
+                      Route ID
+                    </TableHead>
+                    <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
+                      Zone ID
                     </TableHead>
                     <TableHead className="text-xs sm:text-sm whitespace-nowrap px-2 sm:px-4">
                       Actions
@@ -239,64 +233,47 @@ const AssignmentDashboard = ({ onBack, onCreateAssignment, onUpdateAssignment, o
                 <TableBody>
                   {displayAssignments.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-6 sm:py-8 text-muted-foreground text-xs sm:text-sm">
+                      <TableCell colSpan={5} className="text-center py-6 sm:py-8 text-muted-foreground text-xs sm:text-sm">
                         {errorMessage ? "No assignments found due to an error. Please try again." : "No assignments found. Create your first assignment to get started."}
                       </TableCell>
                     </TableRow>
                   ) : (
-                    displayAssignments.map((assignment) => {
-                      const shiftBadge = getShiftBadge(assignment.shift);
-                      return (
-                        <TableRow key={assignment.assignmentId} className="hover:bg-muted/50">
-                          <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap font-medium">
-                            {assignment.assignmentId}
-                          </TableCell>
-                          <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
-                            {assignment.vehicle}
-                          </TableCell>
-                          <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap hidden sm:table-cell">
-                            {assignment.route}
-                          </TableCell>
-                          <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap hidden md:table-cell">
-                            {assignment.zone}
-                          </TableCell>
-                          <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap hidden lg:table-cell">
-                            <div className="flex flex-wrap gap-1">
-                              {assignment.assignedWorkers?.map((worker, index) => (
-                                <Badge key={index} variant="secondary" className="text-xs">
-                                  {worker}
-                                </Badge>
-                              ))}
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
-                            <Badge variant={shiftBadge.variant} className={`text-xs ${shiftBadge.className}`}>
-                              {assignment.shift}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
-                            <div className="flex space-x-1">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => onUpdateAssignment(assignment.assignmentId)}
-                                className="h-6 w-6 p-0"
-                              >
-                                <Edit className="h-3 w-3" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleDeleteAssignmentClick(assignment.assignmentId)}
-                                className="h-6 w-6 p-0 text-red-600 border-red-600 hover:bg-red-50"
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })
+                    displayAssignments.map((assignment) => (
+                      <TableRow key={assignment.assignmentId} className="hover:bg-muted/50">
+                        <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap font-medium">
+                          {assignment.assignmentId}
+                        </TableCell>
+                        <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+                          {assignment.vehicleId}
+                        </TableCell>
+                        <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+                          {assignment.routeId}
+                        </TableCell>
+                        <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+                          {assignment.zoneId}
+                        </TableCell>
+                        <TableCell className="text-xs sm:text-sm px-2 sm:px-4 whitespace-nowrap">
+                          <div className="flex space-x-1">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => onUpdateAssignment(assignment.assignmentId)}
+                              className="h-6 w-6 p-0"
+                            >
+                              <Edit className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleDeleteAssignmentClick(assignment.assignmentId)}
+                              className="h-6 w-6 p-0 text-red-600 border-red-600 hover:bg-red-50"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
                   )}
                 </TableBody>
               </Table>
@@ -307,51 +284,42 @@ const AssignmentDashboard = ({ onBack, onCreateAssignment, onUpdateAssignment, o
               {displayAssignments.length > 0 && (
                 <div className="space-y-3">
                   <h3 className="text-sm font-medium text-muted-foreground px-3">Assignment Details</h3>
-                  {displayAssignments.map((assignment) => {
-                    const shiftBadge = getShiftBadge(assignment.shift);
-                    return (
-                      <Card key={`mobile-${assignment.assignmentId}`} className="mx-3">
-                        <CardContent className="p-3">
-                          <div className="space-y-2">
-                            <div className="flex justify-between items-start">
-                              <div className="flex-1 min-w-0">
-                                <p className="font-medium text-sm">{assignment.assignmentId}</p>
-                                <p className="text-xs text-muted-foreground">Vehicle: {assignment.vehicle}</p>
-                                <p className="text-xs text-muted-foreground">Route: {assignment.route}</p>
-                                <p className="text-xs text-muted-foreground">Zone: {assignment.zone}</p>
-                              </div>
-                              <Badge variant={shiftBadge.variant} className={`text-xs ml-2 ${shiftBadge.className}`}>
-                                {assignment.shift}
-                              </Badge>
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              <p>👥 Workers: {assignment.assignedWorkers?.join(", ") || "None"}</p>
-                            </div>
-                            <div className="flex space-x-2 pt-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => onUpdateAssignment(assignment.assignmentId)}
-                                className="flex-1"
-                              >
-                                <Edit className="h-3 w-3 mr-1" />
-                                Edit
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => handleDeleteAssignmentClick(assignment.assignmentId)}
-                                className="flex-1 text-red-600 border-red-600 hover:bg-red-50"
-                              >
-                                <Trash2 className="h-3 w-3 mr-1" />
-                                Delete
-                              </Button>
+                  {displayAssignments.map((assignment) => (
+                    <Card key={`mobile-${assignment.assignmentId}`} className="mx-3">
+                      <CardContent className="p-3">
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm">{assignment.assignmentId}</p>
+                              <p className="text-xs text-muted-foreground">Vehicle ID: {assignment.vehicleId}</p>
+                              <p className="text-xs text-muted-foreground">Route ID: {assignment.routeId}</p>
+                              <p className="text-xs text-muted-foreground">Zone ID: {assignment.zoneId}</p>
                             </div>
                           </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+                          <div className="flex space-x-2 pt-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => onUpdateAssignment(assignment.assignmentId)}
+                              className="flex-1"
+                            >
+                              <Edit className="h-3 w-3 mr-1" />
+                              Edit
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleDeleteAssignmentClick(assignment.assignmentId)}
+                              className="flex-1 text-red-600 border-red-600 hover:bg-red-50"
+                            >
+                              <Trash2 className="h-3 w-3 mr-1" />
+                              Delete
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
               )}
             </div>
