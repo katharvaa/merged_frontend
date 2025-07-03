@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Truck, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Truck, CheckCircle, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -270,7 +270,7 @@ const CreateVehicle = ({ onBack, onSuccess }) => {
                   </>
                 ) : (
                   <>
-                    <Truck className="h-4 w-4 mr-2" />
+                    <Plus className="h-4 w-4 mr-2" />
                     Create Vehicle
                   </>
                 )}

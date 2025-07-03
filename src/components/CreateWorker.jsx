@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
-import { ArrowLeft, Save, User, Phone, Mail, Briefcase } from 'lucide-react';
+import { ArrowLeft, Save, User, Phone, Mail, Briefcase, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { workersAPI } from '../utils/api';
 import { validateForm, validateRequired, validateEmail, validatePhone, formatSuccessMessage, trimInput } from '../utils/validation';
@@ -186,7 +186,7 @@ const CreateWorker = ({ onBack, onSuccess }) => {
                   </div>
                 ) : (
                   <div className="flex items-center space-x-2">
-                    <Save className="h-4 w-4" />
+                    <Plus className="h-4 w-4" />
                     <span>Create Worker</span>
                   </div>
                 )}

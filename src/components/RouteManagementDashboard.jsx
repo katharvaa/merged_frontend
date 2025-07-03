@@ -84,7 +84,6 @@ const RouteManagementDashboard = ({ onCreateRoute, onUpdateRoute, onDeleteRoute,
               className="flex items-center gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
-              Dashboard
             </Button>
           )}
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 dark:text-white">Route Management</h1>
