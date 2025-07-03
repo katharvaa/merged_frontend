@@ -98,13 +98,7 @@ const Dashboard = ({ onCreatePickup, onDeletePickup, onUpdatePickup }) => {
       color: 'text-orange-600 dark:text-orange-400',
       bgColor: 'bg-orange-100 dark:bg-orange-900'
     },
-    {
-      title: 'Efficiency',
-      value: '94%',
-      icon: TrendingUp,
-      color: 'text-purple-600 dark:text-purple-400',
-      bgColor: 'bg-purple-100 dark:bg-purple-900'
-    }
+
   ];
 
   return (
@@ -165,7 +159,7 @@ const Dashboard = ({ onCreatePickup, onDeletePickup, onUpdatePickup }) => {
         )}
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {stats.map((stat, index) => (
             <motion.div
               key={stat.title}
@@ -197,26 +191,26 @@ const Dashboard = ({ onCreatePickup, onDeletePickup, onUpdatePickup }) => {
           transition={{ delay: 0.4, duration: 0.6 }}
           className="flex justify-center mb-8"
         >
-          <div className="flex flex-col sm:flex-row gap-4 w-full max-w-4xl">
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
             <Button
               onClick={onCreatePickup}
-              className="flex-1 h-12 text-lg text-white transition-all duration-200 hover:scale-105 bg-green-600 hover:bg-green-700"
+              className="px-6 py-2 h-9 text-sm text-white transition-all duration-200 hover:scale-105 bg-green-600 hover:bg-green-700 rounded-full"
             >
-              <Plus className="h-5 w-5 mr-2" />
+              <Plus className="h-4 w-4 mr-2" />
               Create Pickup
             </Button>
             <Button
               onClick={onUpdatePickup}
-              className="flex-1 h-12 text-lg text-white dark:text-white transition-all duration-200 hover:scale-105 bg-yellow-500 hover:bg-yellow-600"
+              className="px-6 py-2 h-9 text-sm text-white dark:text-white transition-all duration-200 hover:scale-105 bg-yellow-500 hover:bg-yellow-600 rounded-full"
             >
-              <Edit className="h-5 w-5 mr-2" />
+              <Edit className="h-4 w-4 mr-2" />
               Update Pickup
             </Button>
             <Button
               onClick={onDeletePickup}
-              className="flex-1 h-12 text-lg text-white transition-all duration-200 hover:scale-105 bg-red-500 hover:bg-red-700"
+              className="px-6 py-2 h-9 text-sm text-white transition-all duration-200 hover:scale-105 bg-red-500 hover:bg-red-700 rounded-full"
             >
-              <Trash2 className="h-5 w-5 mr-2" />
+              <Trash2 className="h-4 w-4 mr-2" />
               Delete Pickup
             </Button>
           </div>
@@ -343,4 +337,3 @@ const Dashboard = ({ onCreatePickup, onDeletePickup, onUpdatePickup }) => {
 };
 
 export default Dashboard;
-

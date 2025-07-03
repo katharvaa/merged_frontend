@@ -184,18 +184,13 @@ const CreatePickup = ({ onBack, onSuccess }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
-              <Button
-                variant="ghost"
-                onClick={onBack}
-                className="transition-all duration-200 hover:scale-105 text-white hover:bg-green-700"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
-              </Button>
               <h1 className="text-2xl lg:text-3xl font-bold flex items-center space-x-2">
                 <Leaf className="h-6 w-6 text-white" />
                 <span>WasteWise</span>
               </h1>
+              <Badge variant="secondary" className="hidden sm:inline-flex bg-green-700 text-white/80">
+                Pickup
+              </Badge>
             </div>
 
             <div className="flex items-center space-x-4">
@@ -203,8 +198,7 @@ const CreatePickup = ({ onBack, onSuccess }) => {
                 variant="outline"
                 size="icon"
                 onClick={toggleTheme}
-                className="transition-all duration-200 hover:scale-105 text-gray-800 dark:text-white"
-              >
+                className="transition-all duration-200 hover:scale-105 bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 rounded-full h-8 w-8">
                 {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
               </Button>
               
@@ -216,7 +210,6 @@ const CreatePickup = ({ onBack, onSuccess }) => {
                 </Avatar>
                 <div className="hidden sm:block">
                   <p className="text-sm font-medium">{user?.name}</p>
-                  <p className="text-xs text-muted-foreground">#{user?.empId}</p>
                 </div>
               </div>
             </div>
@@ -233,7 +226,14 @@ const CreatePickup = ({ onBack, onSuccess }) => {
           <Card className="shadow-2xl">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Plus className="h-5 w-5" />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={onBack}
+                  className="transition-all duration-200 hover:scale-105"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
                 <span>Create New Pickup</span>
               </CardTitle>
             </CardHeader>
@@ -244,7 +244,7 @@ const CreatePickup = ({ onBack, onSuccess }) => {
                   <div className="space-y-2">
                     <Label htmlFor="zone" className="flex items-center space-x-2">
                       <MapPin className="h-4 w-4" />
-                      <span>Zone</span>
+                      <span>Zone <span className="text-red-500">*</span></span>
                     </Label>
                     <Select value={formData.zone} onValueChange={(value) => handleInputChange('zone', value)}>
                       <SelectTrigger className={errors.zone ? 'border-red-500' : ''}>
@@ -262,7 +262,7 @@ const CreatePickup = ({ onBack, onSuccess }) => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="location">Location</Label>
+                    <Label htmlFor="location">Location <span className="text-red-500">*</span></Label>
                     <Input
                       id="location"
                       placeholder="Enter a pick-up point"
@@ -275,11 +275,11 @@ const CreatePickup = ({ onBack, onSuccess }) => {
                 </div>
 
                 {/* Time Slot and Frequency */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                   <div className="space-y-2">
                     <Label className="flex items-center space-x-2">
                       <Clock className="h-4 w-4" />
-                      <span>Start Time</span>
+                      <span>Start Time <span className="text-red-500">*</span></span>
                     </Label>
                     <Select value={formData.startTime} onValueChange={(value) => handleInputChange('startTime', value)}>
                       <SelectTrigger className={errors.startTime ? 'border-red-500' : ''}>
@@ -297,7 +297,7 @@ const CreatePickup = ({ onBack, onSuccess }) => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>End Time</Label>
+                    <Label>End Time <span className="text-red-500">*</span></Label>
                     <Select 
                       value={formData.endTime} 
                       onValueChange={(value) => handleInputChange('endTime', value)}
@@ -317,10 +317,10 @@ const CreatePickup = ({ onBack, onSuccess }) => {
                     {errors.endTime && <p className="text-sm text-red-500">{errors.endTime}</p>}
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-2 md:col-span-2">
                     <Label className="flex items-center space-x-2">
                       <Calendar className="h-4 w-4" />
-                      <span>Frequency</span>
+                      <span>Frequency <span className="text-red-500">*</span></span>
                     </Label>
                     <Select value={formData.frequency} onValueChange={(value) => handleInputChange('frequency', value)}>
                       <SelectTrigger className={errors.frequency ? 'border-red-500' : ''}>
@@ -340,33 +340,32 @@ const CreatePickup = ({ onBack, onSuccess }) => {
                   </div>
                 </div>
 
-                {/* Vehicle Selection */}
-                <div className="space-y-2">
-                  <Label className="flex items-center space-x-2">
-                    <Truck className="h-4 w-4" />
-                    <span>Select a vehicle</span>
-                  </Label>
-                  <Select value={formData.vehicle} onValueChange={(value) => handleInputChange('vehicle', value)}>
-                    <SelectTrigger className={errors.vehicle ? 'border-red-500' : ''}>
-                      <SelectValue placeholder="Available vehicles" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {vehicles.map((vehicle) => (
-                        <SelectItem key={vehicle.id} value={vehicle.registrationNumber}>
-                          {vehicle.id}: {vehicle.registrationNumber}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.vehicle && <p className="text-sm text-red-500">{errors.vehicle}</p>}
-                </div>
+                {/* Vehicle and Worker Selection */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="space-y-2">
+                    <Label className="flex items-center space-x-2">
+                      <Truck className="h-4 w-4" />
+                      <span>Select a vehicle <span className="text-red-500">*</span></span>
+                    </Label>
+                    <Select value={formData.vehicle} onValueChange={(value) => handleInputChange('vehicle', value)}>
+                      <SelectTrigger className={errors.vehicle ? 'border-red-500' : ''}>
+                        <SelectValue placeholder="Available vehicles" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {vehicles.map((vehicle) => (
+                          <SelectItem key={vehicle.id} value={vehicle.registrationNumber}>
+                            {vehicle.id}: {vehicle.registrationNumber}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.vehicle && <p className="text-sm text-red-500">{errors.vehicle}</p>}
+                  </div>
 
-                {/* Worker Selection */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label className="flex items-center space-x-2">
                       <Users className="h-4 w-4" />
-                      <span>Select worker 1</span>
+                      <span>Select worker 1 <span className="text-red-500">*</span></span>
                     </Label>
                     <Select value={formData.worker1} onValueChange={(value) => handleInputChange('worker1', value)}>
                       <SelectTrigger className={errors.worker1 ? 'border-red-500' : ''}>
@@ -386,7 +385,7 @@ const CreatePickup = ({ onBack, onSuccess }) => {
                   <div className="space-y-2">
                     <Label className="flex items-center space-x-2">
                       <Users className="h-4 w-4" />
-                      <span>Select worker 2</span>
+                      <span>Select worker 2 <span className="text-red-500">*</span></span>
                     </Label>
                     <Select 
                       value={formData.worker2} 
@@ -414,13 +413,24 @@ const CreatePickup = ({ onBack, onSuccess }) => {
                   </Alert>
                 )}
 
-                <Button
-                  type="submit"
-                  className="w-full h-12 text-lg transition-all duration-200 hover:scale-105 bg-green-600 hover:bg-green-700"
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Creating...' : 'Create'}
-                </Button>
+                <div className="flex justify-end space-x-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={onBack}
+                    disabled={isLoading}
+                    className="h-9 px-6"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="h-9 px-6 text-sm transition-all duration-200 hover:scale-105 bg-green-600 hover:bg-green-700"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Creating...' : 'Create'}
+                  </Button>
+                </div>
               </form>
             </CardContent>
           </Card>
@@ -431,4 +441,3 @@ const CreatePickup = ({ onBack, onSuccess }) => {
 };
 
 export default CreatePickup;
-

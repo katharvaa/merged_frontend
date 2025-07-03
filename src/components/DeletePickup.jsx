@@ -5,6 +5,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   Select,
@@ -118,18 +119,13 @@ const DeletePickup = ({ onBack, onSuccess }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
-              <Button
-                variant="ghost"
-                onClick={onBack}
-                className="transition-all duration-200 hover:scale-105 text-white hover:bg-green-700"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
-              </Button>
               <h1 className="text-2xl lg:text-3xl font-bold flex items-center space-x-2">
                 <Leaf className="h-6 w-6 text-white" />
                 <span>WasteWise</span>
               </h1>
+              <Badge variant="secondary" className="hidden sm:inline-flex bg-green-700 text-white/80">
+                Delete
+              </Badge>
             </div>
 
             <div className="flex items-center space-x-4">
@@ -137,8 +133,7 @@ const DeletePickup = ({ onBack, onSuccess }) => {
                 variant="outline"
                 size="icon"
                 onClick={toggleTheme}
-                className="transition-all duration-200 hover:scale-105 text-gray-800 dark:text-white"
-              >
+                className="transition-all duration-200 hover:scale-105 bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 rounded-full h-8 w-8">
                 {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
               </Button>
               
@@ -150,7 +145,6 @@ const DeletePickup = ({ onBack, onSuccess }) => {
                 </Avatar>
                 <div className="hidden sm:block">
                   <p className="text-sm font-medium">{user?.name}</p>
-                  <p className="text-xs text-muted-foreground">#{user?.empId}</p>
                 </div>
               </div>
             </div>
@@ -169,7 +163,14 @@ const DeletePickup = ({ onBack, onSuccess }) => {
           <Card className="shadow-2xl">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Trash2 className="h-5 w-5 text-red-600" />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={onBack}
+                  className="transition-all duration-200 hover:scale-105"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
                 <span>Delete Pickup</span>
               </CardTitle>
             </CardHeader>
@@ -287,11 +288,20 @@ const DeletePickup = ({ onBack, onSuccess }) => {
                     </div>
                   </div>
 
-                  <div className="mt-8 flex justify-center">
+                  <div className="mt-8 flex justify-end space-x-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={onBack}
+                      disabled={isLoading}
+                      className="h-9 px-6"
+                    >
+                      Cancel
+                    </Button>
                     <Button
                       onClick={handleDeleteClick}
                       disabled={isLoading}
-                      className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white transition-all duration-200 hover:scale-105"
+                      className="h-9 px-6 text-sm transition-all duration-200 hover:scale-105 bg-red-600 hover:bg-red-700"
                     >
                       {isLoading ? (
                         <>
@@ -365,4 +375,3 @@ const DeletePickup = ({ onBack, onSuccess }) => {
 };
 
 export default DeletePickup;
-

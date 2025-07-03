@@ -56,8 +56,7 @@ function App() {
   };
 
   const handleDeletePickup = () => {
-    // This would typically open a dialog or navigate to a delete specific page
-    console.log('Delete Pickup button clicked');
+    setCurrentView('deletePickup');
   };
 
   const handleBackToSchedulerDashboard = () => {

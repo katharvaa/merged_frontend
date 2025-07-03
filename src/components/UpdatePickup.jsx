@@ -34,12 +34,17 @@ import { motion } from 'framer-motion';
 
 const UpdatePickup = ({ onBack, onSuccess }) => {
   const { user } = useAuth();
-  const { pickups, vehicles, workers, updatePickup, getZoneName, getVehicleName, getWorkerName } = usePickup();
+  const { pickups, zones, vehicles, workers, updatePickup } = usePickup();
   const { theme, toggleTheme } = useTheme();
   
   const [selectedPickupId, setSelectedPickupId] = useState('');
   const [selectedPickup, setSelectedPickup] = useState(null);
   const [formData, setFormData] = useState({
+    zone: '',
+    location: '',
+    startTime: '',
+    endTime: '',
+    frequency: '',
     vehicle: '',
     worker1: '',
     worker2: ''
@@ -49,6 +54,42 @@ const UpdatePickup = ({ onBack, onSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  const frequencies = ['Daily', 'Weekly', 'Monthly'];
+
+  // Generate time options (24-hour format)
+  const generateTimeOptions = () => {
+    const times = [];
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute = 0; minute < 60; minute += 30) {
+        const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+        times.push(timeString);
+      }
+    }
+    return times;
+  };
+
+  const timeOptions = generateTimeOptions();
+
+  // Get available end times (minimum 1 hour after start time)
+  const getAvailableEndTimes = () => {
+    if (!formData.startTime) return timeOptions;
+    
+    const [startHour, startMinute] = formData.startTime.split(':').map(Number);
+    const startTotalMinutes = startHour * 60 + startMinute;
+    const minEndTotalMinutes = startTotalMinutes + 60; // Minimum 1 hour
+    
+    return timeOptions.filter(time => {
+      const [hour, minute] = time.split(':').map(Number);
+      const totalMinutes = hour * 60 + minute;
+      return totalMinutes >= minEndTotalMinutes;
+    });
+  };
+
+  // Get available workers (exclude selected worker1)
+  const getAvailableWorkers2 = () => {
+    return workers.filter(worker => worker.id !== formData.worker1);
+  };
+
   // Load pickup data when pickup ID is selected
   useEffect(() => {
     if (selectedPickupId) {
@@ -56,6 +97,11 @@ const UpdatePickup = ({ onBack, onSuccess }) => {
       if (pickup) {
         setSelectedPickup(pickup);
         setFormData({
+          zone: pickup.zone,
+          location: pickup.location,
+          startTime: pickup.startTime,
+          endTime: pickup.endTime,
+          frequency: pickup.frequency,
           vehicle: pickup.vehicle,
           worker1: pickup.worker1,
           worker2: pickup.worker2
@@ -64,6 +110,11 @@ const UpdatePickup = ({ onBack, onSuccess }) => {
     } else {
       setSelectedPickup(null);
       setFormData({
+        zone: '',
+        location: '',
+        startTime: '',
+        endTime: '',
+        frequency: '',
         vehicle: '',
         worker1: '',
         worker2: ''
@@ -71,15 +122,15 @@ const UpdatePickup = ({ onBack, onSuccess }) => {
     }
   }, [selectedPickupId, pickups]);
 
-  // Get available workers (exclude selected worker1)
-  const getAvailableWorkers2 = () => {
-    return workers.filter(worker => worker.id !== formData.worker1);
-  };
-
   const validateForm = () => {
     const newErrors = {};
     
     if (!selectedPickupId) newErrors.pickupId = 'Please select a pickup to update';
+    if (!formData.zone) newErrors.zone = 'Zone is required';
+    if (!formData.location.trim()) newErrors.location = 'Location is required';
+    if (!formData.startTime) newErrors.startTime = 'Start time is required';
+    if (!formData.endTime) newErrors.endTime = 'End time is required';
+    if (!formData.frequency) newErrors.frequency = 'Frequency is required';
     if (!formData.vehicle) newErrors.vehicle = 'Vehicle is required';
     if (!formData.worker1) newErrors.worker1 = 'Worker 1 is required';
     if (!formData.worker2) newErrors.worker2 = 'Worker 2 is required';
@@ -125,6 +176,14 @@ const UpdatePickup = ({ onBack, onSuccess }) => {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
     
+    // Reset end time if start time changes
+    if (field === 'startTime' && formData.endTime) {
+      const availableEndTimes = getAvailableEndTimes();
+      if (!availableEndTimes.includes(formData.endTime)) {
+        setFormData(prev => ({ ...prev, endTime: '' }));
+      }
+    }
+    
     // Reset worker2 if worker1 changes to same value
     if (field === 'worker1' && value === formData.worker2) {
       setFormData(prev => ({ ...prev, worker2: '' }));
@@ -162,24 +221,19 @@ const UpdatePickup = ({ onBack, onSuccess }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-yellow-50 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
       {/* Header */}
       <header className="bg-green-600 dark:bg-green-800 text-white sticky top-0 z-40 shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
-              <Button
-                variant="ghost"
-                onClick={onBack}
-                className="transition-all duration-200 hover:scale-105 text-white hover:bg-green-700"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
-              </Button>
               <h1 className="text-2xl lg:text-3xl font-bold flex items-center space-x-2">
                 <Leaf className="h-6 w-6 text-white" />
                 <span>WasteWise</span>
               </h1>
+              <Badge variant="secondary" className="hidden sm:inline-flex bg-green-700 text-white/80">
+                Update
+              </Badge>
             </div>
 
             <div className="flex items-center space-x-4">
@@ -187,8 +241,7 @@ const UpdatePickup = ({ onBack, onSuccess }) => {
                 variant="outline"
                 size="icon"
                 onClick={toggleTheme}
-                className="transition-all duration-200 hover:scale-105 text-gray-800 dark:text-white"
-              >
+                className="transition-all duration-200 hover:scale-105 bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 rounded-full h-8 w-8">
                 {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
               </Button>
               
@@ -200,7 +253,6 @@ const UpdatePickup = ({ onBack, onSuccess }) => {
                 </Avatar>
                 <div className="hidden sm:block">
                   <p className="text-sm font-medium">{user?.name}</p>
-                  <p className="text-xs text-muted-foreground">#{user?.empId}</p>
                 </div>
               </div>
             </div>
@@ -217,7 +269,14 @@ const UpdatePickup = ({ onBack, onSuccess }) => {
           <Card className="shadow-2xl">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Edit className="h-5 w-5" />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={onBack}
+                  className="transition-all duration-200 hover:scale-105"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
                 <span>Update Pickup</span>
               </CardTitle>
             </CardHeader>
@@ -227,7 +286,7 @@ const UpdatePickup = ({ onBack, onSuccess }) => {
                 <div className="space-y-2">
                   <Label className="flex items-center space-x-2">
                     <Search className="h-4 w-4" />
-                    <span>Select Pickup to Update</span>
+                    <span>Select Pickup to Update <span className="text-red-500">*</span></span>
                   </Label>
                   <Select value={selectedPickupId} onValueChange={handlePickupSelect}>
                     <SelectTrigger className={errors.pickupId ? 'border-red-500' : ''}>
@@ -244,82 +303,116 @@ const UpdatePickup = ({ onBack, onSuccess }) => {
                   {errors.pickupId && <p className="text-sm text-red-500">{errors.pickupId}</p>}
                 </div>
 
-                {/* Display current pickup details (read-only) */}
+                {/* Show form only when pickup is selected */}
                 {selectedPickup && (
-                  <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Current Pickup Details</h3>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <>
+                    {/* Zone and Location */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label className="flex items-center space-x-2">
+                        <Label htmlFor="zone" className="flex items-center space-x-2">
                           <MapPin className="h-4 w-4" />
-                          <span>Zone</span>
+                          <span>Zone <span className="text-red-500">*</span></span>
                         </Label>
-                        <Input
-                          value={`${selectedPickup.zone} - ${getZoneName(selectedPickup.zone)}`}
-                          disabled
-                          className="bg-gray-100 dark:bg-gray-700"
-                        />
+                        <Select value={formData.zone} onValueChange={(value) => handleInputChange('zone', value)}>
+                          <SelectTrigger className={errors.zone ? 'border-red-500' : ''}>
+                            <SelectValue placeholder="Select a zone" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {zones.map((zone) => (
+                              <SelectItem key={zone.id} value={zone.id}>
+                                {zone.id} - {zone.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {errors.zone && <p className="text-sm text-red-500">{errors.zone}</p>}
                       </div>
 
                       <div className="space-y-2">
-                        <Label>Location</Label>
+                        <Label htmlFor="location">Location <span className="text-red-500">*</span></Label>
                         <Input
-                          value={selectedPickup.location}
-                          disabled
-                          className="bg-gray-100 dark:bg-gray-700"
+                          id="location"
+                          placeholder="Enter a pick-up point"
+                          value={formData.location}
+                          onChange={(e) => handleInputChange('location', e.target.value)}
+                          className={errors.location ? 'border-red-500' : ''}
                         />
+                        {errors.location && <p className="text-sm text-red-500">{errors.location}</p>}
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Time Slot and Frequency */}
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                       <div className="space-y-2">
                         <Label className="flex items-center space-x-2">
                           <Clock className="h-4 w-4" />
-                          <span>Start Time</span>
+                          <span>Start Time <span className="text-red-500">*</span></span>
                         </Label>
-                        <Input
-                          value={selectedPickup.startTime}
-                          disabled
-                          className="bg-gray-100 dark:bg-gray-700"
-                        />
+                        <Select value={formData.startTime} onValueChange={(value) => handleInputChange('startTime', value)}>
+                          <SelectTrigger className={errors.startTime ? 'border-red-500' : ''}>
+                            <SelectValue placeholder="Start time" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {timeOptions.map((time) => (
+                              <SelectItem key={time} value={time}>
+                                {time}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {errors.startTime && <p className="text-sm text-red-500">{errors.startTime}</p>}
                       </div>
 
                       <div className="space-y-2">
-                        <Label>End Time</Label>
-                        <Input
-                          value={selectedPickup.endTime}
-                          disabled
-                          className="bg-gray-100 dark:bg-gray-700"
-                        />
+                        <Label>End Time <span className="text-red-500">*</span></Label>
+                        <Select 
+                          value={formData.endTime} 
+                          onValueChange={(value) => handleInputChange('endTime', value)}
+                          disabled={!formData.startTime}
+                        >
+                          <SelectTrigger className={errors.endTime ? 'border-red-500' : ''}>
+                            <SelectValue placeholder="End time" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {getAvailableEndTimes().map((time) => (
+                              <SelectItem key={time} value={time}>
+                                {time}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {errors.endTime && <p className="text-sm text-red-500">{errors.endTime}</p>}
                       </div>
 
-                      <div className="space-y-2">
+                      <div className="space-y-2 md:col-span-2">
                         <Label className="flex items-center space-x-2">
                           <Calendar className="h-4 w-4" />
-                          <span>Frequency</span>
+                          <span>Frequency <span className="text-red-500">*</span></span>
                         </Label>
-                        <div className="flex items-center h-10 px-3 py-2 border border-input bg-gray-100 dark:bg-gray-700 rounded-md">
-                          <Badge variant={selectedPickup.frequency === 'Daily' ? 'default' : 'secondary'}>
-                            {selectedPickup.frequency}
-                          </Badge>
-                        </div>
+                        <Select value={formData.frequency} onValueChange={(value) => handleInputChange('frequency', value)}>
+                          <SelectTrigger className={errors.frequency ? 'border-red-500' : ''}>
+                            <SelectValue placeholder="Frequency" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {frequencies.map((freq) => (
+                              <SelectItem key={freq} value={freq}>
+                                <Badge variant={freq === 'Daily' ? 'default' : 'secondary'}>
+                                  {freq}
+                                </Badge>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {errors.frequency && <p className="text-sm text-red-500">{errors.frequency}</p>}
                       </div>
                     </div>
-                  </div>
-                )}
 
-                {/* Editable fields - only show when pickup is selected */}
-                {selectedPickup && (
-                  <>
-                    <div className="border-t pt-6">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Update Vehicle and Workers</h3>
-                      
-                      {/* Vehicle Selection */}
-                      <div className="space-y-2 mb-6">
+                    {/* Vehicle and Worker Selection */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="space-y-2">
                         <Label className="flex items-center space-x-2">
                           <Truck className="h-4 w-4" />
-                          <span>Select a vehicle</span>
+                          <span>Select a vehicle <span className="text-red-500">*</span></span>
                         </Label>
                         <Select value={formData.vehicle} onValueChange={(value) => handleInputChange('vehicle', value)}>
                           <SelectTrigger className={errors.vehicle ? 'border-red-500' : ''}>
@@ -327,8 +420,8 @@ const UpdatePickup = ({ onBack, onSuccess }) => {
                           </SelectTrigger>
                           <SelectContent>
                             {vehicles.map((vehicle) => (
-                              <SelectItem key={vehicle.id} value={vehicle.id}>
-                                {vehicle.id} - {vehicle.name}
+                              <SelectItem key={vehicle.id} value={vehicle.registrationNumber}>
+                                {vehicle.id}: {vehicle.registrationNumber}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -336,91 +429,77 @@ const UpdatePickup = ({ onBack, onSuccess }) => {
                         {errors.vehicle && <p className="text-sm text-red-500">{errors.vehicle}</p>}
                       </div>
 
-                      {/* Worker Selection */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <Label className="flex items-center space-x-2">
-                            <Users className="h-4 w-4" />
-                            <span>Select worker 1</span>
-                          </Label>
-                          <Select value={formData.worker1} onValueChange={(value) => handleInputChange('worker1', value)}>
-                            <SelectTrigger className={errors.worker1 ? 'border-red-500' : ''}>
-                              <SelectValue placeholder="Available workers" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {workers.map((worker) => (
-                                <SelectItem key={worker.id} value={worker.id}>
-                                  {worker.id} - {worker.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          {errors.worker1 && <p className="text-sm text-red-500">{errors.worker1}</p>}
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label className="flex items-center space-x-2">
-                            <Users className="h-4 w-4" />
-                            <span>Select worker 2</span>
-                          </Label>
-                          <Select 
-                            value={formData.worker2} 
-                            onValueChange={(value) => handleInputChange('worker2', value)}
-                            disabled={!formData.worker1}
-                          >
-                            <SelectTrigger className={errors.worker2 ? 'border-red-500' : ''}>
-                              <SelectValue placeholder="Available workers" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {getAvailableWorkers2().map((worker) => (
-                                <SelectItem key={worker.id} value={worker.id}>
-                                  {worker.id} - {worker.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          {errors.worker2 && <p className="text-sm text-red-500">{errors.worker2}</p>}
-                        </div>
+                      <div className="space-y-2">
+                        <Label className="flex items-center space-x-2">
+                          <Users className="h-4 w-4" />
+                          <span>Select worker 1 <span className="text-red-500">*</span></span>
+                        </Label>
+                        <Select value={formData.worker1} onValueChange={(value) => handleInputChange('worker1', value)}>
+                          <SelectTrigger className={errors.worker1 ? 'border-red-500' : ''}>
+                            <SelectValue placeholder="Available workers" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {workers.map((worker) => (
+                              <SelectItem key={worker.id} value={worker.id}>
+                                {worker.id} - {worker.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {errors.worker1 && <p className="text-sm text-red-500">{errors.worker1}</p>}
                       </div>
-                    </div>
 
-                    {/* Error Alert */}
-                    {errors.submit && (
-                      <Alert variant="destructive">
-                        <AlertDescription>{errors.submit}</AlertDescription>
-                      </Alert>
-                    )}
-
-                    {/* Submit Button */}
-                    <div className="flex justify-end space-x-4 pt-6">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={onBack}
-                        disabled={isLoading}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        type="submit"
-                        disabled={isLoading}
-                        className="bg-yellow-600 hover:bg-yellow-700 text-white"
-                      >
-                        {isLoading ? (
-                          <div className="flex items-center space-x-2">
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                            <span>Updating...</span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center space-x-2">
-                            <Edit className="h-4 w-4" />
-                            <span>Update Pickup</span>
-                          </div>
-                        )}
-                      </Button>
+                      <div className="space-y-2">
+                        <Label className="flex items-center space-x-2">
+                          <Users className="h-4 w-4" />
+                          <span>Select worker 2 <span className="text-red-500">*</span></span>
+                        </Label>
+                        <Select 
+                          value={formData.worker2} 
+                          onValueChange={(value) => handleInputChange('worker2', value)}
+                          disabled={!formData.worker1}
+                        >
+                          <SelectTrigger className={errors.worker2 ? 'border-red-500' : ''}>
+                            <SelectValue placeholder="Available workers" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {getAvailableWorkers2().map((worker) => (
+                              <SelectItem key={worker.id} value={worker.id}>
+                                {worker.id} - {worker.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {errors.worker2 && <p className="text-sm text-red-500">{errors.worker2}</p>}
+                      </div>
                     </div>
                   </>
                 )}
+
+                {errors.submit && (
+                  <Alert variant="destructive">
+                    <AlertDescription>{errors.submit}</AlertDescription>
+                  </Alert>
+                )}
+
+                <div className="flex justify-end space-x-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={onBack}
+                    disabled={isLoading}
+                    className="h-9 px-6"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="h-9 px-6 text-sm transition-all duration-200 hover:scale-105 bg-green-600 hover:bg-green-700"
+                    disabled={isLoading || !selectedPickup}
+                  >
+                    {isLoading ? 'Updating...' : 'Update'}
+                  </Button>
+                </div>
               </form>
             </CardContent>
           </Card>
@@ -431,4 +510,3 @@ const UpdatePickup = ({ onBack, onSuccess }) => {
 };
 
 export default UpdatePickup;
-
